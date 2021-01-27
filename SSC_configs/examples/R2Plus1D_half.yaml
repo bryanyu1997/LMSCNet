@@ -1,0 +1,48 @@
+DATALOADER:
+  NUM_WORKERS: 4
+DATASET:
+  AUGMENTATION:
+    FLIPS: true
+  MODALITIES:
+    3D_LABEL: true
+    3D_OCCLUDED: true
+    3D_OCCUPANCY: true
+  ROOT_DIR: /media/public_dataset/SemanticKITTI/data_odometry_voxels/
+  SPLIT:
+    TEST: 4649
+    TRAIN: 3834
+    VAL: 815
+  TYPE: SemanticKITTI
+MODEL:
+  FILE: LMSCNet.models.R2Plus1D
+  TYPE: R2Plus1D
+OPTIMIZER:
+  BASE_LR: 0.001
+  BETA1: 0.9
+  BETA2: 0.999
+  MOMENTUM: NA
+  TYPE: Adam
+  WEIGHT_DECAY: NA
+OUTPUT:
+  BEST_LOSS: 0.17745278775691986
+  BEST_METRIC: 0.22272955684087306
+  OUTPUT_PATH: ../SSC_out/R2Plus1D_half
+  OUT_ROOT: ../SSC_out/
+SCHEDULER:
+  FREQUENCY: epoch
+  LR_POWER: 0.98
+  TYPE: power_iteration
+STATUS:
+  BEST_LOSS: ../SSC_out/R2Plus1D_half/chkpt/best-loss
+  BEST_METRIC: ../SSC_out/R2Plus1D_half/chkpt/best-metric
+  CONFIG: ../SSC_configs/examples/R2Plus1D_half.yaml
+  LAST: ../SSC_out/R2Plus1D_half/chkpt/last
+  RESUME: true
+TRAIN:
+  BATCH_SIZE: 1
+  CHECKPOINT_PERIOD: 15
+  EPOCHS: 40
+  SUMMARY_PERIOD: 50
+VAL:
+  BATCH_SIZE: 4
+  SUMMARY_PERIOD: 20
