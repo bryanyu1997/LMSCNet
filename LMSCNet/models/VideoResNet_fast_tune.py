@@ -51,9 +51,9 @@ class SegmentationHead(nn.Module):
     return x_in
 
 
-class R2Plus1D(nn.Module):
+class VideoResNet_fast_tune(nn.Module):
 
-  def __init__(self, class_num, input_dimensions, class_frequencies, TuneMul=1):
+  def __init__(self, class_num, input_dimensions, class_frequencies, TuneMul=1, ch_lst=[16,64,64,64], z_kernel=17, z_padding=8):
     '''
     SSCNet architecture
     :param N: number of classes to be predicted (i.e. 12 for NYUv2)
@@ -67,68 +67,15 @@ class R2Plus1D(nn.Module):
 
     self.pool = nn.MaxPool2d(2)  # [F=2; S=2; P=0; D=1]
 
-    ch_lst = [16,64,64,64]
     self.encoder = VideoResNet(num_channels=ch_lst)
     #models.video.r2plus1d_18(pretrained=True)
     #self.encoder.stem[0] = self.change_channel(self.encoder.stem[0])
     self.z_downsample = nn.Sequential(
-            nn.Conv3d(ch_lst[0], ch_lst[0], kernel_size=(17, 1, 1), stride=(2,1,1), padding=(8, 0, 0), bias=False),
+            nn.Conv3d(ch_lst[0], ch_lst[0], kernel_size=(z_kernel, 1, 1), stride=(2,1,1), padding=(z_padding, 0, 0), bias=False),
             nn.BatchNorm3d(ch_lst[0]),
             nn.ReLU(inplace=True),)
     self.decoder = Decoder(ch_lst, 32)
     self.tune = TuneMul
-
-    '''self.Encoder_block1 = nn.Sequential(
-      nn.Conv2d(f, f, kernel_size=3, padding=1, stride=1),
-      nn.ReLU(),
-      nn.Conv2d(f, f, kernel_size=3, padding=1, stride=1),
-      nn.ReLU()
-    )
-
-    self.Encoder_block2 = nn.Sequential(
-      nn.MaxPool2d(2),
-      nn.Conv2d(f, int(f*1.5), kernel_size=3, padding=1, stride=1),
-      nn.ReLU(),
-      nn.Conv2d(int(f*1.5), int(f*1.5), kernel_size=3, padding=1, stride=1),
-      nn.ReLU()
-    )
-
-    self.Encoder_block3 = nn.Sequential(
-      nn.MaxPool2d(2),
-      nn.Conv2d(int(f*1.5), int(f*2), kernel_size=3, padding=1, stride=1),
-      nn.ReLU(),
-      nn.Conv2d(int(f*2), int(f*2), kernel_size=3, padding=1, stride=1),
-      nn.ReLU()
-    )
-
-    self.Encoder_block4 = nn.Sequential(
-      nn.MaxPool2d(2),
-      nn.Conv2d(int(f*2), int(f*2.5), kernel_size=3, padding=1, stride=1),
-      nn.ReLU(),
-      nn.Conv2d(int(f*2.5), int(f*2.5), kernel_size=3, padding=1, stride=1),
-      nn.ReLU()
-    )
-
-    # Treatment output 1:8
-    self.conv_out_scale_1_8 = nn.Conv2d(int(f*2.5), int(f/8), kernel_size=3, padding=1, stride=1)
-    self.deconv_1_8__1_2    = nn.ConvTranspose2d(int(f/8), int(f/8), kernel_size=4, padding=0, stride=4)
-    self.deconv_1_8__1_1    = nn.ConvTranspose2d(int(f/8), int(f/8), kernel_size=8, padding=0, stride=8)
-
-    # Treatment output 1:4
-    self.deconv1_8          = nn.ConvTranspose2d(int(f/8), int(f/8), kernel_size=6, padding=2, stride=2)
-    self.conv1_4            = nn.Conv2d(int(f*2) + int(f/8), int(f*2), kernel_size=3, padding=1, stride=1)
-    self.conv_out_scale_1_4 = nn.Conv2d(int(f*2), int(f/4), kernel_size=3, padding=1, stride=1)
-    self.deconv_1_4__1_1    = nn.ConvTranspose2d(int(f/4), int(f/4), kernel_size=4, padding=0, stride=4)
-
-    # Treatment output 1:2
-    self.deconv1_4          = nn.ConvTranspose2d(int(f/4), int(f/4), kernel_size=6, padding=2, stride=2)
-    self.conv1_2            = nn.Conv2d(int(f*1.5) + int(f/4) + int(f/8), int(f*1.5), kernel_size=3, padding=1, stride=1)
-    self.conv_out_scale_1_2 = nn.Conv2d(int(f*1.5), int(f/2), kernel_size=3, padding=1, stride=1)
-
-    # Treatment output 1:1
-    self.deconv1_2          = nn.ConvTranspose2d(int(f/2), int(f/2), kernel_size=6, padding=2, stride=2)
-    self.conv1_1            = nn.Conv2d(int(f/8) + int(f/4) + int(f/2) + int(f), f, kernel_size=3, padding=1, stride=1)
-    self.seg_head_1_1       = SegmentationHead(1, 8, self.nbr_classes, [1, 2, 3])'''
 
   def forward(self, x):
 
