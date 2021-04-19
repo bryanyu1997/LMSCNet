@@ -1,0 +1,59 @@
+DATALOADER:
+  NUM_WORKERS: 4
+DATASET:
+  AUGMENTATION:
+    FLIPS: true
+  MODALITIES:
+    3D_LABEL: true
+    3D_OCCLUDED: true
+    3D_OCCUPANCY: true
+  ROOT_DIR: /media/public_dataset/Kinetics400/
+  SPLIT:
+    TEST: 4649
+    TRAIN: 3834
+    VAL: 815
+  TYPE: SemanticKITTI
+MODEL:
+  FILE: LMSCNet.models.r3d_stage3_kinetics
+  KWARGS:
+    ch_lst:
+    - 16
+    - 32
+    - 128
+    stage_layer:
+    - 1
+    - 2
+    - 3
+  TYPE: r3d_stage3_kinetics
+OPTIMIZER:
+  BASE_LR: 0.001
+  BETA1: 0.9
+  BETA2: 0.999
+  MOMENTUM: NA
+  TYPE: Adam
+  WEIGHT_DECAY: NA
+OUTPUT:
+  BEST_LOSS: 7.539168291259557e-05
+  BEST_METRIC: 3.493845960982822e-05
+  OUTPUT_PATH: ../SSC_out/kinetics_crop
+  OUT_ROOT: ../SSC_out/
+SCHEDULER:
+  FREQUENCY: epoch
+  LR_POWER: 0.98
+  TYPE: power_iteration
+STATUS:
+  BEST_LOSS: ../SSC_out/kinetics_crop/chkpt/best-loss
+  BEST_METRIC: ../SSC_out/kinetics_crop/chkpt/best-metric
+  CONFIG: ../SSC_configs/examples/kinetics_crop.yaml
+  LAST: ../SSC_out/kinetics_crop/chkpt/last
+  RESUME: true
+TRAIN:
+  BATCH_SIZE: 32
+  CHECKPOINT_PERIOD: 15
+  CSV_NAME: train.csv
+  EPOCHS: 40
+  SUMMARY_PERIOD: 50
+VAL:
+  BATCH_SIZE: 32
+  CSV_NAME: val.csv
+  SUMMARY_PERIOD: 50
